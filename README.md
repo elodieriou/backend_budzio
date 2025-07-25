@@ -25,6 +25,64 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## API Documentation
+
+### Authentication Endpoints
+
+#### Login
+- **URL**: `/auth/login`
+- **Method**: `POST`
+- **Request Body**:
+  ```json
+  {
+    "email": "user@example.com",
+    "password": "password123"
+  }
+  ```
+- **Response**: JWT access token
+  ```json
+  {
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  }
+  ```
+
+#### Request Password Reset
+- **URL**: `/auth/request-password-reset`
+- **Method**: `POST`
+- **Request Body**:
+  ```json
+  {
+    "email": "user@example.com"
+  }
+  ```
+- **Response**: Success message and reset token (in a real application, the token would be sent via email)
+  ```json
+  {
+    "message": "Un email de réinitialisation a été envoyé si l'adresse existe",
+    "resetToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  }
+  ```
+
+#### Reset Password
+- **URL**: `/auth/reset-password`
+- **Method**: `POST`
+- **Request Body**:
+  ```json
+  {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "newPassword": "newPassword123"
+  }
+  ```
+- **Validation**:
+  - Token must be valid and not expired
+  - New password must be at least 6 characters long
+- **Response**: Success message
+  ```json
+  {
+    "message": "Mot de passe réinitialisé avec succès"
+  }
+  ```
+
 ## Project setup
 
 ```bash

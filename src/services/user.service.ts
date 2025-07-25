@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../prisma/service/prisma.service';
-import { $Enums, User } from '../../../generated/prisma';
-import UserRole = $Enums.UserRole;
+import { PrismaService } from '../prisma/service/prisma.service';
 import * as bcrypt from 'bcrypt';
-import { UpdateUserDto } from '../dto/update-user.dto';
+import { UpdateUserDto } from '../dtos/update-user.dto';
+import { User, UserRole } from '@prisma/client';
 
 @Injectable()
 export class UserService {
