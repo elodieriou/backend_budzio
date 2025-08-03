@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { PrismaService } from '../prisma/service/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { UpdateUserDto } from '../dtos/update-user.dto';
@@ -21,15 +21,25 @@ export class UserService {
         const hashedPassword = await bcrypt.hash(data.password, 10);
         const existingUsers = await this.prisma.user.count();
         const role: UserRole = existingUsers === 0 ? UserRole.SUPER_ADMIN : UserRole.USER;
-        return this.prisma.user.create({
-            data: {
-                email: data.email,
-                password: hashedPassword,
-                firstname: data.firstname,
-                lastname: data.lastname,
-                role,
-            },
-        });
+
+        try {
+            return await this.prisma.user.create({
+                data: {
+                    email: data.email,
+                    password: hashedPassword,
+                    firstname: data.firstname,
+                    lastname: data.lastname,
+                    role,
+                },
+            });
+        } catch (error) {
+            if (error.code === 'P2002') {
+                throw new ConflictException('Un compte existe déjà avec cet email.');
+            }
+            throw new InternalServerErrorException(
+                'Erreur serveur lors de la création de l’utilisateur.',
+            );
+        }
     }
 
     /**
