@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/service/prisma.service';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
-import { AccessTokenType } from '../models/access-token.type';
+import { LoginType } from '../models/login.type';
 import { User } from '@prisma/client';
 
 @Injectable()
@@ -27,9 +27,10 @@ export class AuthService {
      * Login user
      * @param user - User connected
      */
-    login(user: User): AccessTokenType {
+    login(user: User): LoginType {
         const payload = { sub: user.id, role: user.role };
         return {
+            userId: user.id,
             access_token: this.jwtService.sign(payload),
         };
     }
