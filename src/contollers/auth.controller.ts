@@ -1,18 +1,23 @@
 import { Body, Controller, Patch, Post, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from '../services/auth.service';
 import { MailerService } from '../services/mailer.service';
-import { AccessTokenType } from '../models/access-token.type';
+import { LoginType } from '../models/login.type';
 import { ResetPasswordDto } from '../dtos/reset-password.dto';
 
 @Controller('auth')
 export class AuthController {
+    /**
+     * Api url
+     */
+    private _apiUrl = process.env.API_URL;
+
     constructor(
         private readonly authService: AuthService,
         private readonly mailerService: MailerService,
     ) {}
 
     @Post('login')
-    async login(@Body() body: { email: string; password: string }): Promise<AccessTokenType> {
+    async login(@Body() body: { email: string; password: string }): Promise<LoginType> {
         const user = await this.authService.validateUser(body.email, body.password);
         if (!user) {
             throw new UnauthorizedException('Email ou mot de passe incorrect');
@@ -24,7 +29,7 @@ export class AuthController {
     async requestPasswordReset(@Body() body: { email: string }) {
         try {
             const token = await this.authService.generatePasswordResetToken(body.email);
-            const resetLink = `http://localhost:4200/auth/reset-password?token=${token}`;
+            const resetLink = `${this._apiUrl}/auth/reset-password?token=${token}`;
             await this.mailerService.sendPasswordResetEmail(body.email, resetLink);
         } catch {
             /* empty */
